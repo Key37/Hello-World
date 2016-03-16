@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Good Weather</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+        <!--<link rel="stylesheet" type="text/css" href="css/index.css" />-->
+        <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+        <link rel="stylesheet" type="text/css" href="css/stylesheet.css"/>
+
+        <script type="text/javascript">
+
+            var icons = {   "clear-day" : "B",
+                            "clear-night" : "C",
+                            "rain" : "R",
+                            "sleet" : "G",
+                            "wind" : "S",
+                            "fog" : "N",
+                            "cloudy" : "Y",
+                            "partly-cloudy-day" :"H",
+                            "partly-cloud-night" : "I"
+                        };
+
+            var cities = {
+                "new york": {coords: {latitude: 40.672060, longitude: -73.983898}},
+                "los angeles": {coords: {latitude: 34.101422, longitude: -118.341224}},
+                "chicago": {coords: {latitude: 41.879003, longitude: -87.63675}},
+                "san francisco": {coords: {latitude: 37.788531, longitude: -122.407237}},
+                "miami": {coords: {latitude: 25.790176, longitude: -80.140133}},
+                "current location": ""
+            };
+
+
+            function loadWeather(cityCoords){
+
+                console.log(cityCoords);
+
+                var latlng = cityCoords.coords.latitude + "," + cityCoords.coords.longitude;
+                var forecastURL ="https://api.forecast.io/forecast/c21f60a0c8dc71a62033b772def902a8/"+ latlng;
+
+                $.ajax({
+                 url: forecastURL,
+                 jsonpCallback: 'jasonCallback',
+                        contentType: "application/json",
+                        dataType: 'jsonp',
+                        success: function(json) {
+                            console.log(json);
+                            $("#current_temp").html(json.currently.temperature +"&#176;F");
+                            $("#current_summary").html(json.currently.summary);
+                            $("current_temp").attr("data-icon",icons[json.currently.icon]);
+                        },
+                          error: function(e) {
+                              console.log(e.message);
+                          }
+                    });
+            }
+
+            function loadCity(city){
+
+                $("#location").html(city);
+
+                if (city.toLowerCase() == "current location") {
+                if (navigator.geolocation)
+                        navigator.geolocation.getCurrentPosition(loadWeather,loadDefaultCity);
+                        
+                        else {
+                            loadDefaultCity();
+                    }
+                            }else {
+                                loadWeather(cities[city.toLowerCase()]);
+                    }
+                }
+
+                function loadDefaultCity(){
+                    loadCity("New York")
+            }
+
+            $(document).ready(function(){
+                loadCity("chicago");
+
+                $("a.city").bind("click",function(){
+                    loadCity($(this).html());
+
+                });
+            });
+        </script>
+
+    </head>
+
+    <body>
+    <div class="app">
+        <h1>PhoneGap</h1>
+        <div id="deviceready" class="blink">
+            <p class="event listening">Connecting to Device</p>
+            <p class="event received">Device is Ready</p>
+    <div data-role="page">
+        <div data-role="panel" id="left-panel" data-theme="c">
+            <ul data-theme="d" data-role="listview">
+                <li data-icon="delete"><a href="#" data-rel="close">Closed</a></li>
+                <li data-role="list-divider">Select a City</li>
+                <li ><a href="#" class="city" data-rel="close">Current Location</a> </li>
+                <li ><a href="#" class="city" data-rel="close">Chicago</a> </li>
+                <li ><a href="#" class="city" data-rel="close">Los Angeles</a> </li>
+                <li ><a href="#" class="city" data-rel="close">Miami</a> </li>
+                <li ><a href="#" class="city" data-rel="close">New York</a> </li>
+                <li ><a href="#" class="city" data-rel="close">San Francisco</a> </li>
+
+
+            </ul>
+        </div><!-- /panel -->
+
+    <div data-role="header" data-position="fixed" data-theme="C">
+        <h1>Good Weather</h1>
+        <a href="#left-panel" data-icon="bars" data-role="button" data-iconpos="notext" data-iconshadow="false" >Menu</a>
+    </div>
+        <div data-role="content" class="content">
+            <h1 id="current_temp" class="icon" data-icon="B">65&#176;F</h1>
+            <p id="current_summary">Partly Cloudy</p>
+            <p id="Location">Current Location</p>
+        </div>
+        </div>
+        </div>
+    </div>
+
+    </body>
+
+</html>

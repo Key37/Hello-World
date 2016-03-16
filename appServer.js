@@ -1,0 +1,20 @@
+/**
+ * Created by Key on 9/12/2015.
+ * Description: The main file to start with.
+ */
+
+var http = require("http");
+
+http.createServer(function (request, response) {
+
+    // Send the HTTP header
+    // HTTP Status: 200 : OK
+    // Content Type: text/plain
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+
+    // Send the response body as "Hello World"
+    response.end('This is my first Node application\n');
+}).listen(8081);
+
+// Console will print the message
+console.log('Server running at http://127.0.0.1:8081/');
